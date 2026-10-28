@@ -596,6 +596,15 @@ const icons: Record<ToolIconName, ReactNode> = {
       {text(14.5, 23.5, 8, "#fff", "★")}
     </>
   ),
+  "og-preview": (
+    <>
+      <rect x="3" y="4" width="26" height="24" rx="3" fill="#fff" stroke="#CBD5E1" />
+      <path d="M3 7a3 3 0 0 1 3-3h20a3 3 0 0 1 3 3v9H3Z" fill="#0EA5E9" />
+      <path d="M8 14l4-4.5 3 3 2.5-2 4.5 3.5Z" fill="#E0F2FE" />
+      <circle cx="22" cy="8.5" r="1.6" fill="#FDE68A" />
+      <path d="M7 20h13M7 24h9" stroke="#64748B" strokeWidth="1.8" strokeLinecap="round" />
+    </>
+  ),
   screenshot: (
     <>
       <rect x="2" y="3" width="28" height="26" rx="4" fill="#EC4899" />

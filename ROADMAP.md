@@ -97,41 +97,26 @@ pass.
     16.7 megapixels; input is limited to 25 MB and 40 megapixels. Copy image
     needs a browser that can write images to the clipboard.
 
-## Next: developer tools (not started)
+- **Phase 12:** Open Graph Preview (Web and HTTP Tools), the last tool on
+  this roadmap. 71 tools in total. Limitations: previews approximate the
+  Facebook/LinkedIn and X layouts and are not pixel-identical; image URLs are
+  never loaded (a local file can stand in for the image), so the tool cannot
+  confirm an image exists or check its real size; it reads only the HTML
+  given and cannot see what a live page serves to crawlers.
 
-Requirements for all of them:
+## Next
 
-- Process everything in the browser. No backend, API routes, server actions,
-  analytics, or sending input to third-party services.
-- Reuse the existing architecture: a registry entry, logic as pure functions in
-  `src/lib/tools/` with unit tests, a component in `src/components/tools/<slug>/`,
-  a route with `ToolPageContent` (explanation, example, notes, FAQs, related
-  tools), and a colorful icon in `ToolIcon`.
-- Keep dependencies minimal and lazy-load them on the tool's page.
-- Preserve all existing tools and their behavior.
-- When implementation begins, test functionality, security, responsiveness,
-  type-checking, lint and the production build, and add browser tests in `e2e/`.
-
-### 1. Open Graph Preview
-
-Enter a title, description, image (URL or local file) and site name; preview
-common social sharing card layouts; show recommended dimensions and the
-`og:`/`twitter:` meta tag markup.
-
-- Duplication check: no overlap. There is no Meta Tag Generator in the registry
-  or codebase today; if one is planned, keep it as a separate tool that builds
-  general `<head>` tags, while this one focuses on previews.
-- Category: Developer Utilities, or alongside a future Meta Tag Generator.
-- Do not fetch arbitrary URLs or claim to inspect a live page's metadata.
-  Images given by URL may be displayed with a plain `<img>`, which the browser
-  loads directly from that host; state this. Local images stay local (Blob URL).
-- Previews approximate each platform's layout; say they are not
-  pixel-identical and may change without notice.
-- Escape every value in the generated markup (reuse `html-entities.ts`).
-- The HTML WYSIWYG Editor (Phase 9) shows how to preview untrusted markup
-  without loading remote images.
+No tools are planned. Add new items here before work starts.
 
 ## Completed from this list
+
+### Open Graph Preview
+
+Shipped in Phase 12 as `/tools/open-graph-preview`. Following the
+requirements recorded here, it does not fetch URLs or claim to inspect live
+pages, escapes and never inserts user HTML, and is separate from the Meta Tag
+Generator. Unlike the original note, remote images are not displayed at all
+(not even through a plain `<img>`), so no request reaches the image's host.
 
 ### Screenshot Beautifier, SVG to PNG Converter, Favicon Generator
 

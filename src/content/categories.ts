@@ -71,9 +71,9 @@ const allCategories: CategoryDefinition[] = [
     slug: "web",
     name: "Web and HTTP Tools",
     shortName: "Web",
-    description: "Parse URLs and user agents, analyze response headers, look up HTTP status codes, generate meta tags and edit HTML.",
+    description: "Parse URLs and user agents, analyze response headers, look up HTTP status codes, generate and preview meta tags and edit HTML.",
     intro:
-      "Tools for the building blocks of the web: break a URL into its parts and edit its query string, find out what a user-agent string says, look up what an HTTP status code means, check pasted response headers for caching and security problems, generate the meta tags a page's head needs, see exactly which keyboard events a key press fires, and write HTML in a visual editor with a safe preview.",
+      "Tools for the building blocks of the web: break a URL into its parts and edit its query string, find out what a user-agent string says, look up what an HTTP status code means, check pasted response headers for caching and security problems, generate the meta tags a page's head needs and preview how its link will look when shared, see exactly which keyboard events a key press fires, and write HTML in a visual editor with a safe preview.",
   },
   {
     slug: "networking",

@@ -101,7 +101,8 @@ export type ToolIconName =
   | "meta-tags"
   | "svg-png"
   | "favicon"
-  | "screenshot";
+  | "screenshot"
+  | "og-preview";
 
 /**
  * "planned" tools are listed but not linked: their page does not exist yet.

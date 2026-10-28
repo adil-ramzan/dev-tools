@@ -615,6 +615,15 @@ export const tools: ToolDefinition[] = [
     keywords: ["meta tags", "seo meta tags", "open graph tags", "og tags", "twitter card", "canonical url", "html head"],
   },
   {
+    slug: "open-graph-preview",
+    name: "Open Graph Preview",
+    description: "Preview link cards for Facebook, LinkedIn and X from pasted HTML or typed fields, and find missing or broken og: and twitter: tags.",
+    category: "web",
+    status: "available",
+    icon: "og-preview",
+    keywords: ["open graph preview", "og preview", "link preview", "twitter card preview", "social share preview", "og:image checker"],
+  },
+  {
     slug: "svg-to-png-converter",
     name: "SVG to PNG Converter",
     description: "Convert SVG to PNG at any scale or exact size, with a transparent or colored background. The SVG is sanitized first.",

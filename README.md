@@ -93,7 +93,8 @@ src/
                     shell (shared command tokenizer), curl, url-parse, html-editor, user-agent,
                     http-status, keycode, qr, svg-placeholder, git-cheatsheet, docker-compose,
                     benchmark, lorem, chmod, ipv4, mac, ipv6-ula, device-info, ports, password,
-                    http-headers, meta-tags, svg-png, favicon (with ICO and ZIP writers), screenshot
+                    http-headers, meta-tags, svg-png, favicon (with ICO and ZIP writers), screenshot,
+                    og-preview
   data/             Generated datasets bundled with tools (oui-vendors.json)
   types/            Shared TypeScript types, and declarations for untyped packages (mime-db)
 e2e/                Playwright browser tests: site-wide regression checks and tool workflows

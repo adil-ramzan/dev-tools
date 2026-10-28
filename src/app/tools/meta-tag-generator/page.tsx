@@ -15,7 +15,7 @@ const content: ToolPageContent = {
   notes: [
     "Length guidance is approximate: search engines truncate by pixel width, not characters, and may rewrite titles and descriptions.",
     "Open Graph images should be absolute HTTPS URLs. 1200×630 pixels (1.91:1) works for large cards on most platforms; keep the file under about 5 MB.",
-    "Nothing is fetched or sent: URLs are only checked for form. The tool does not preview cards or inspect a live page's metadata.",
+    "Nothing is fetched or sent: URLs are only checked for form. To see how the tags may look as link cards, paste the output into the Open Graph Preview.",
     "The keywords meta tag is not generated, because major search engines ignore it.",
   ],
   example: {
@@ -59,7 +59,7 @@ Share image URL: https://acme.example/og/home.png`,
         "Summary shows a small square thumbnail next to the title; large image shows a wide image above it. Large image needs an image at least 300×157 pixels and works best at 1200×630.",
     },
   ],
-  related: ["url-parser", "http-header-analyzer", "html-entity-encoder-decoder", "slug-generator"],
+  related: ["open-graph-preview", "url-parser", "http-header-analyzer", "html-entity-encoder-decoder"],
 };
 
 export const metadata = toolMetadata(slug, content);
