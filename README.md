@@ -27,6 +27,13 @@ npm run dev                  # http://localhost:3000
 | `npm run test:e2e`  | Run browser tests (Playwright) against a production build; run `npm run build` first |
 | `npm run data:oui`  | Regenerate `src/data/oui-vendors.json` from the installed `oui-data` package (MAC Address Vendor Lookup) |
 
+## Deployment (Cloudflare Workers)
+
+The site is deployed by Cloudflare Workers Builds from the `main` branch (Worker `dev-tools`). The repository has no Wrangler or OpenNext configuration: Workers Builds detects Next.js and builds it with the OpenNext Cloudflare adapter.
+
+- Set `NEXT_PUBLIC_SITE_URL` (for example `https://dev-tools.<subdomain>.workers.dev` or your custom domain) as a **build** variable in the Worker's Settings → Builds. It is inlined at build time, so changing it needs a new build.
+- Do not enable `cacheComponents` or `partialPrefetching` in `next.config.ts`. Cache Components requires the Node.js runtime; on Workers every page render hangs (error 1101).
+
 ## Stack
 
 - Next.js 16 (App Router, Turbopack) and React 19
