@@ -94,7 +94,10 @@ export type ToolIconName =
   | "mac"
   | "ipv6"
   | "device"
-  | "port";
+  | "port"
+  | "password"
+  | "http-headers"
+  | "meta-tags";
 
 /**
  * "planned" tools are listed but not linked: their page does not exist yet.

@@ -5,8 +5,8 @@ import { categories } from "@/content/categories";
 import { availableTools, tools } from "@/content/tools";
 
 describe("tool registry", () => {
-  it("lists all 64 tools as available, with unique slugs", () => {
-    expect(tools).toHaveLength(64);
+  it("lists all 67 tools as available, with unique slugs", () => {
+    expect(tools).toHaveLength(67);
     expect(availableTools).toHaveLength(tools.length);
     expect(new Set(tools.map((t) => t.slug)).size).toBe(tools.length);
   });

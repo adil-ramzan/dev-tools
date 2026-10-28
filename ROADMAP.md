@@ -58,7 +58,27 @@ pass.
   keywords, and the Ctrl+K shortcut overrides the browser's own Ctrl+K
   (focus the address bar's search) on this site.
 
-## Next: five developer tools (not started)
+- **Phase 11, batch 1:** 3 tools. Password Generator (Security and
+  Cryptography; previously item 5 on this roadmap), HTTP Header Analyzer and
+  Meta Tag Generator (Web and HTTP Tools). 67 tools in total. Decisions and
+  limitations:
+  - The Password Generator is a separate page that reuses `randomString` and
+    the character sets from `src/lib/tools/token.ts`; the Token Generator is
+    unchanged apart from linking to it. "At least one of each" redraws whole
+    passwords until every set is present (uniform over valid passwords), and
+    the entropy shown subtracts the excluded passwords exactly. No passphrase
+    (word list) mode yet.
+  - The HTTP Header Analyzer works only on pasted text and never fetches a
+    URL. Its checks cover common caching, security-header, CSP, CORS, cookie,
+    framing and redirect mistakes; they are guidance, not an audit. Only the
+    last response of a pasted redirect chain is analyzed.
+  - The Meta Tag Generator writes general `<head>` tags (title, description,
+    canonical, robots, theme color, Open Graph, Twitter/X card). It does not
+    preview cards, so the Open Graph Preview below remains a separate tool.
+    Length guidance is by characters, while search engines truncate by pixel
+    width.
+
+## Next: developer tools (not started)
 
 Requirements for all of them:
 
@@ -144,35 +164,12 @@ common social sharing card layouts; show recommended dimensions and the
 - The HTML WYSIWYG Editor (Phase 9) shows how to preview untrusted markup
   without loading remote images.
 
-### 5. Password Generator
-
-Generate passwords with `crypto.getRandomValues`, with length controls,
-character-class toggles, an option to exclude ambiguous characters (such as
-`Il1O0`), copy feedback and strength guidance.
-
-- **Duplication check: overlaps with the existing Token Generator.** In
-  Characters mode, the Token Generator already generates passwords from
-  uppercase, lowercase, digit and symbol sets, 1 to 512 characters long, using
-  rejection sampling (no modulo bias). It shows entropy and warns below 128
-  bits, and its keywords include "password generator". Missing are:
-  excluding ambiguous characters, guaranteeing at least one character from each
-  selected set, and password-specific strength guidance.
-- Recommendation: build a separate, password-focused page that reuses
-  `randomString` and `alphabetFor` from `src/lib/tools/token.ts`, so the
-  randomness code is not duplicated. Remove "password generator" from the Token
-  Generator's keywords and link the two tools as related. Alternatively, extend
-  the Token Generator. Decide before starting.
-- If each selected class is guaranteed, use an unbiased method: for example,
-  regenerate until the condition holds, or place required characters and then
-  shuffle with an unbiased Fisher–Yates shuffle driven by rejection sampling.
-- Show strength as entropy in bits with guidance, not as a guarantee of
-  security. Never store, transmit or put passwords in URLs.
-- Category: Generators, or Security and Cryptography (added in Phase 8, next
-  to the Password Strength Analyzer, which the generator should link to).
-- Phase 8 deliberately did not add a password generator, to avoid duplicating
-  the Token Generator before this decision is made.
-
 ## Completed from this list
+
+### Password Generator
+
+Shipped in Phase 11 (batch 1) as `/tools/password-generator`, following the
+requirements and the separate-page recommendation recorded here.
 
 ### cURL to Code Converter
 

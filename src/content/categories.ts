@@ -55,17 +55,17 @@ const allCategories: CategoryDefinition[] = [
     slug: "security",
     name: "Security and Cryptography",
     shortName: "Security",
-    description: "Hash passwords, sign and encrypt messages, generate keys and one-time codes, and check password strength.",
+    description: "Generate and hash passwords, sign and encrypt messages, generate keys and one-time codes, and check password strength.",
     intro:
-      "Cryptographic tools that run entirely in your browser: hash and verify passwords with bcrypt, sign messages with HMAC, encrypt text with a password, generate RSA key pairs and two-factor codes, build Basic authentication headers and estimate how hard a password is to guess. Keys, passwords and messages are never sent, logged or saved.",
+      "Cryptographic tools that run entirely in your browser: generate random passwords, hash and verify passwords with bcrypt, sign messages with HMAC, encrypt text with a password, generate RSA key pairs and two-factor codes, build Basic authentication headers and estimate how hard a password is to guess. Keys, passwords and messages are never sent, logged or saved.",
   },
   {
     slug: "web",
     name: "Web and HTTP Tools",
     shortName: "Web",
-    description: "Parse URLs and user agents, look up HTTP status codes, inspect key events and edit HTML.",
+    description: "Parse URLs and user agents, analyze response headers, look up HTTP status codes, generate meta tags and edit HTML.",
     intro:
-      "Tools for the building blocks of the web: break a URL into its parts and edit its query string, find out what a user-agent string says, look up what an HTTP status code means, see exactly which keyboard events a key press fires, and write HTML in a visual editor with a safe preview.",
+      "Tools for the building blocks of the web: break a URL into its parts and edit its query string, find out what a user-agent string says, look up what an HTTP status code means, check pasted response headers for caching and security problems, generate the meta tags a page's head needs, see exactly which keyboard events a key press fires, and write HTML in a visual editor with a safe preview.",
   },
   {
     slug: "networking",

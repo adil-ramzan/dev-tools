@@ -52,7 +52,7 @@ All four sets, length 20`,
         "A version 4 UUID has 122 random bits in a fixed format and is meant as an identifier. A token from this tool can carry much more randomness and is meant to be kept secret.",
     },
   ],
-  related: ["uuid-generator", "base64-encoder-decoder", "jwt-decoder", "url-encoder-decoder"],
+  related: ["password-generator", "uuid-generator", "base64-encoder-decoder", "jwt-decoder"],
 };
 
 export const metadata = toolMetadata(slug, content);

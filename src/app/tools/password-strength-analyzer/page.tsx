@@ -46,7 +46,7 @@ Stolen bcrypt hashes: about 17 minutes`,
       answer: "Use a password manager to generate a unique random password for every account, or the Token Generator for a random string of the length you need.",
     },
   ],
-  related: ["token-generator", "bcrypt-hash-verify", "hash-generator", "string-obfuscator"],
+  related: ["password-generator", "token-generator", "bcrypt-hash-verify", "hash-generator"],
 };
 
 export const metadata = toolMetadata(slug, content);

@@ -547,6 +547,36 @@ const icons: Record<ToolIconName, ReactNode> = {
       {text(16, 24.5, 5, "#CCFBF1", "8080")}
     </>
   ),
+  password: (
+    <>
+      <rect x="2.5" y="9" width="27" height="14" rx="3" fill="#0F172A" />
+      <g fill="#FACC15">
+        <circle cx="8" cy="16" r="2" />
+        <circle cx="13.5" cy="16" r="2" />
+        <circle cx="19" cy="16" r="2" />
+      </g>
+      <path d="M23.5 12.5v7" stroke="#38BDF8" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="25" cy="25" r="5" fill="#22C55E" />
+      <path d="m22.8 25 1.6 1.6 2.9-3" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  "http-headers": (
+    <>
+      <rect x="3" y="3" width="26" height="26" rx="3" fill="#F8FAFC" stroke="#CBD5E1" />
+      <rect x="3" y="3" width="26" height="6" rx="3" fill="#2563EB" />
+      <path d="M7 14h6M7 19h8M7 24h5" stroke="#64748B" strokeWidth="2" strokeLinecap="round" />
+      <path d="M16 14h9M18 19h7M15 24h10" stroke="#93C5FD" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="25" cy="24" r="4.5" fill="#F59E0B" />
+      {text(25, 26.6, 7, "#fff", "!")}
+    </>
+  ),
+  "meta-tags": (
+    <>
+      <path d="M4 5h14l10 11-10 11H4Z" fill="#F97316" />
+      <circle cx="9" cy="16" r="2.4" fill="#FFF7ED" />
+      {text(19, 18.5, 6.5, "#fff", "</>")}
+    </>
+  ),
 };
 
 export function ToolIcon({ name, size = 28 }: { name: ToolIconName; size?: number }) {

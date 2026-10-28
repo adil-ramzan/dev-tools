@@ -587,6 +587,33 @@ export const tools: ToolDefinition[] = [
     icon: "port",
     keywords: ["random port", "port number generator", "free port", "tcp port", "udp port", "ephemeral port"],
   },
+  {
+    slug: "password-generator",
+    name: "Password Generator",
+    description: "Generate strong random passwords with chosen character sets, ambiguous characters excluded and every set guaranteed.",
+    category: "security",
+    status: "available",
+    icon: "password",
+    keywords: ["password generator", "random password", "strong password", "secure password", "passphrase", "exclude ambiguous characters"],
+  },
+  {
+    slug: "http-header-analyzer",
+    name: "HTTP Header Analyzer",
+    description: "Paste HTTP response headers to see what each one does and find caching, security, CORS and cookie problems.",
+    category: "web",
+    status: "available",
+    icon: "http-headers",
+    keywords: ["http headers", "response headers", "security headers", "cache-control", "csp", "hsts", "cors", "set-cookie"],
+  },
+  {
+    slug: "meta-tag-generator",
+    name: "Meta Tag Generator",
+    description: "Generate copy-ready HTML meta tags for title, description, canonical URL, robots, Open Graph and Twitter/X cards.",
+    category: "web",
+    status: "available",
+    icon: "meta-tags",
+    keywords: ["meta tags", "seo meta tags", "open graph tags", "og tags", "twitter card", "canonical url", "html head"],
+  },
 ];
 
 export const featuredTools = tools.filter((tool) => tool.featured);
