@@ -44,6 +44,14 @@ const allCategories: CategoryDefinition[] = [
       "Visual tools for front-end work: convert colors and check their contrast, design gradients and box shadows with a live preview, convert px to rem, and see how flexbox properties lay out a container, and make SVG placeholder images. Each tool gives you code to copy.",
   },
   {
+    slug: "image",
+    name: "Image Tools",
+    shortName: "Images",
+    description: "Convert SVG to PNG, generate favicons and beautify screenshots, all in your browser.",
+    intro:
+      "Work with images without uploading them: convert SVG files to PNG at any size, turn text, an emoji or a logo into a complete favicon set with favicon.ico and the HTML to use it, and place screenshots on a background with padding, rounded corners and a shadow. Every image is decoded and drawn on your device.",
+  },
+  {
     slug: "generators",
     name: "Generators",
     shortName: "Generators",

@@ -577,6 +577,37 @@ const icons: Record<ToolIconName, ReactNode> = {
       {text(19, 18.5, 6.5, "#fff", "</>")}
     </>
   ),
+  "svg-png": (
+    <>
+      <rect x="2.5" y="4" width="15" height="17" rx="2" fill="#FDE68A" stroke="#D97706" />
+      {text(10, 15, 5, "#92400E", "SVG")}
+      <path d="M15.5 21.5h5l-1.6-1.6m1.6 1.6-1.6 1.6" fill="none" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="14.5" y="11" width="15" height="17" rx="2" fill="#DBEAFE" stroke="#2563EB" />
+      <path d="M16.5 25l3.5-4 2.5 2.5 2-2 3 3.5Z" fill="#3B82F6" />
+      <circle cx="25.5" cy="15.5" r="1.6" fill="#F59E0B" />
+    </>
+  ),
+  favicon: (
+    <>
+      <path d="M3 9a3 3 0 0 1 3-3h9l3 4h8a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3Z" fill="#E2E8F0" stroke="#94A3B8" />
+      <rect x="6" y="7.5" width="6" height="6" rx="1.5" fill="#8B5CF6" />
+      {text(9, 12.2, 4.5, "#fff", "★")}
+      <rect x="9" y="15" width="11" height="11" rx="2.5" fill="#8B5CF6" />
+      {text(14.5, 23.5, 8, "#fff", "★")}
+    </>
+  ),
+  screenshot: (
+    <>
+      <rect x="2" y="3" width="28" height="26" rx="4" fill="#EC4899" />
+      <rect x="2" y="3" width="28" height="26" rx="4" fill="#6366F1" opacity=".55" />
+      <rect x="6" y="8" width="20" height="16" rx="2" fill="#fff" />
+      <path d="M6 10a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.5H6Z" fill="#CBD5E1" />
+      <circle cx="8.3" cy="9.8" r=".8" fill="#EF4444" />
+      <circle cx="10.6" cy="9.8" r=".8" fill="#F59E0B" />
+      <circle cx="12.9" cy="9.8" r=".8" fill="#22C55E" />
+      <path d="M9 15h14M9 18h10M9 21h7" stroke="#94A3B8" strokeWidth="1.4" strokeLinecap="round" />
+    </>
+  ),
 };
 
 export function ToolIcon({ name, size = 28 }: { name: ToolIconName; size?: number }) {

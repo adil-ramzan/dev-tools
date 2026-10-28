@@ -614,6 +614,33 @@ export const tools: ToolDefinition[] = [
     icon: "meta-tags",
     keywords: ["meta tags", "seo meta tags", "open graph tags", "og tags", "twitter card", "canonical url", "html head"],
   },
+  {
+    slug: "svg-to-png-converter",
+    name: "SVG to PNG Converter",
+    description: "Convert SVG to PNG at any scale or exact size, with a transparent or colored background. The SVG is sanitized first.",
+    category: "image",
+    status: "available",
+    icon: "svg-png",
+    keywords: ["svg to png", "convert svg", "rasterize svg", "svg export", "png from svg", "svg converter"],
+  },
+  {
+    slug: "favicon-generator",
+    name: "Favicon Generator",
+    description: "Create favicon.ico, PNG icons from 16 to 512 pixels, a web manifest and the HTML from text, an emoji or an image.",
+    category: "image",
+    status: "available",
+    icon: "favicon",
+    keywords: ["favicon", "favicon.ico", "apple touch icon", "site icon", "web manifest icons", "emoji favicon"],
+  },
+  {
+    slug: "screenshot-beautifier",
+    name: "Screenshot Beautifier",
+    description: "Add a background, padding, rounded corners, a shadow and a window frame to a screenshot, then export a PNG.",
+    category: "image",
+    status: "available",
+    icon: "screenshot",
+    keywords: ["screenshot beautifier", "screenshot background", "pretty screenshot", "screenshot frame", "image padding", "mockup"],
+  },
 ];
 
 export const featuredTools = tools.filter((tool) => tool.featured);

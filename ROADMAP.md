@@ -78,6 +78,25 @@ pass.
     Length guidance is by characters, while search engines truncate by pixel
     width.
 
+- **Phase 11, batch 2:** 3 tools in a new Image Tools category: SVG to PNG
+  Converter, Favicon Generator and Screenshot Beautifier (items 1–3 of the
+  previous roadmap). 70 tools in total. No dependencies were added: SVG is
+  sanitized with the existing DOMPurify, and the ICO and ZIP writers are
+  small, tested modules in `src/lib/tools/favicon.ts`. Limitations:
+  - SVG to PNG: external images, fonts and stylesheets are removed and never
+    loaded, so text falls back to installed fonts; animations are captured at
+    their first frame. Output is capped at 8,192 px per side and 16.7
+    megapixels, input at 5 MB.
+  - Favicon Generator: PNG and ICO only (no SVG favicon output). favicon.ico
+    holds 16, 32 and 48 px PNG images, which Windows Vista and later and all
+    current browsers read, but not Windows XP-era software. Emoji and text
+    use the device's fonts. The ZIP is uncompressed (the PNGs are already
+    compressed).
+  - Screenshot Beautifier: frames are a drawn browser window only (no device
+    mock-ups); output is PNG at the screenshot's own resolution, capped at
+    16.7 megapixels; input is limited to 25 MB and 40 megapixels. Copy image
+    needs a browser that can write images to the clipboard.
+
 ## Next: developer tools (not started)
 
 Requirements for all of them:
@@ -93,59 +112,7 @@ Requirements for all of them:
 - When implementation begins, test functionality, security, responsiveness,
   type-checking, lint and the production build, and add browser tests in `e2e/`.
 
-### 1. ScreenSnap: screenshot beautifier
-
-Import a local screenshot; set a solid or gradient background; adjust padding,
-corner radius and shadow; optionally place the image in a device or browser
-frame; export PNG.
-
-- Duplication check: no existing image tool. The SVG Placeholder Generator
-  (Phase 9) creates images from scratch and does not edit screenshots. The CSS Gradient Generator and CSS
-  Box Shadow Generator produce CSS rather than images; reuse their gradient and
-  shadow models where practical.
-- Category: none of the current categories fits image editing well. Decide
-  between "CSS and Design Tools" and a new "Image Tools" category before
-  starting.
-- Rendering: Canvas 2D. Set a maximum input size (pixels and bytes) and an
-  output size cap, because large canvases fail silently or crash tabs on mobile.
-  Decode with `createImageBitmap` and report decode failures clearly.
-- Frames should be drawn in code or as bundled SVG, not fetched.
-
-### 2. SVG to PNG Converter
-
-Accept SVG text or a local file, choose output dimensions and a transparent or
-colored background, preview the result, and download a PNG.
-
-- Duplication check: no overlap. The Base64 File Converter only re-encodes
-  bytes, and the SVG Placeholder and QR Code generators already export SVG
-  and, for QR codes, PNG; reuse the QR tool's canvas export code.
-- Category: same decision as ScreenSnap.
-- Security: render through an `<img>` element from a Blob URL. Browsers do not
-  run scripts or load external resources for SVG in an image context. Also
-  sanitize the SVG with the existing DOMPurify dependency (SVG profile) before
-  previewing, and never insert untrusted SVG into the DOM with
-  `innerHTML`. Follow the HTML WYSIWYG Editor's approach (Phase 9): sandboxed
-  frames, a blocking CSP, and remote URLs made inert before display. External `href`s will not load; say so in the notes.
-- Handle SVGs without `width`/`height` (use the `viewBox`), and cap output
-  dimensions.
-
-### 3. Favicon Generator
-
-Accept text, an emoji or a local image, and generate favicon PNGs (16, 32, 48,
-180 Apple Touch Icon, 192 and 512), a web manifest snippet and the HTML markup,
-downloadable as a package.
-
-- Duplication check: no overlap.
-- Category: same decision as ScreenSnap.
-- ICO: offer ICO export only if a real ICO file (an ICONDIR header with
-  embedded PNG images) is generated and tested; otherwise label the output
-  "PNG favicons" and do not mention ICO as supported.
-- Packaging: a ZIP needs either a small, maintained library loaded on demand,
-  or individual downloads. Decide when implementing, and justify any
-  dependency.
-- Emoji rendering depends on the user's platform fonts; note this on the page.
-
-### 4. Open Graph Preview
+### 1. Open Graph Preview
 
 Enter a title, description, image (URL or local file) and site name; preview
 common social sharing card layouts; show recommended dimensions and the
@@ -165,6 +132,14 @@ common social sharing card layouts; show recommended dimensions and the
   without loading remote images.
 
 ## Completed from this list
+
+### Screenshot Beautifier, SVG to PNG Converter, Favicon Generator
+
+Shipped in Phase 11 (batch 2) as `/tools/screenshot-beautifier`,
+`/tools/svg-to-png-converter` and `/tools/favicon-generator`, in a new Image
+Tools category, following the requirements recorded here (Canvas 2D,
+`createImageBitmap`, size caps, DOMPurify plus image-context rendering for
+SVG, a real ICO file, frames drawn in code).
 
 ### Password Generator
 

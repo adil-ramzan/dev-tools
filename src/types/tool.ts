@@ -11,6 +11,7 @@ export type ToolCategory =
   | "encoders-decoders"
   | "converters"
   | "css-design"
+  | "image"
   | "generators"
   | "security"
   | "web"
@@ -97,7 +98,10 @@ export type ToolIconName =
   | "port"
   | "password"
   | "http-headers"
-  | "meta-tags";
+  | "meta-tags"
+  | "svg-png"
+  | "favicon"
+  | "screenshot";
 
 /**
  * "planned" tools are listed but not linked: their page does not exist yet.

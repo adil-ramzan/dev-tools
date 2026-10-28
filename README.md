@@ -42,7 +42,7 @@ Runtime dependencies beyond the framework, each loaded on demand only by the too
 - `sql-formatter`: SQL formatting for 13 dialects (SQL Formatter)
 - `diff`: line and word diffs and unified patches (Diff Checker)
 - `@cfworker/json-schema`: JSON Schema validation by interpretation, with no code generation or eval (JSON Schema Validator, run in a Web Worker)
-- `markdown-it` and `dompurify`: Markdown rendering with raw HTML disabled, then HTML sanitizing (Markdown Editor)
+- `markdown-it` and `dompurify`: Markdown rendering with raw HTML disabled, then HTML sanitizing (Markdown Editor); DOMPurify's SVG profile also sanitizes SVG before it is drawn as an image (SVG to PNG Converter)
 - `@noble/hashes`: audited, dependency-free MD5, SHA-224, SHA-3 and RIPEMD-160, which Web Crypto does not provide; SHA-1 and SHA-2 use Web Crypto (Hash Generator)
 - `entities`: WHATWG-compliant decoding of all 2,231 named HTML character references; already installed through `markdown-it` and `parse5` (HTML Entity Encoder & Decoder)
 - `yaml` and `smol-toml`: maintained YAML 1.2 and TOML 1.0 parsers and serializers with no dependencies (YAML ↔ JSON ↔ TOML Converter)
@@ -57,7 +57,7 @@ Bundled data: `src/data/oui-vendors.json`, the IEEE Registration Authority's pub
 
 Development-only: `oui-data` (source of the bundled vendor data), `vitest` and `jsdom` (unit tests, jsdom for DOM-based sanitizer and SVG tests), `@playwright/test` and `@axe-core/playwright` (browser and accessibility tests), and `jsqr` (decodes generated QR codes in tests to prove they scan).
 
-Every other tool is implemented in `src/lib/tools/` without dependencies. The security tools (HMAC, RSA key pairs, text encryption, TOTP, Basic Auth) use only the browser's Web Crypto API: AES-GCM, PBKDF2, HMAC and RSA-OAEP are never implemented in JavaScript here.
+Every other tool is implemented in `src/lib/tools/` without dependencies. The image tools draw with Canvas 2D and decode files with `createImageBitmap`; favicon.ico and the favicon ZIP are written by small tested functions in `favicon.ts` rather than a library. The security tools (HMAC, RSA key pairs, text encryption, TOTP, Basic Auth) use only the browser's Web Crypto API: AES-GCM, PBKDF2, HMAC and RSA-OAEP are never implemented in JavaScript here.
 
 ## Architecture
 
@@ -74,14 +74,16 @@ src/
     seo/            JsonLd
     ui/             Primitives: Button (+ buttonClassName), Container, Field, Label, Hint, Notice,
                     FieldError, Input, Textarea, Checkbox, SegmentedControl, CopyButton,
-                    Alert, Separator, TextLink, PasswordInput (masked secret field with Show/Hide)
+                    Alert, Separator, TextLink, PasswordInput (masked secret field with Show/Hide),
+                    FileDropField (file input with drop area and optional paste)
     tools/          Tool listings (ToolGrid, ToolIcon, ToolDirectory, CategoryList), the shared
                     tool page (ToolPage, ToolPanel, EncodeDecodeTool) and one folder per tool
   config/site.ts    Site name, description, base URL and navigation
   content/
     tools.ts        Tool registry: the source of truth for tool routes, listings and the sitemap
     categories.ts   Category definitions; only categories with tools are published
-  lib/              Pure utility functions (class names, metadata, theme, nav, clipboard, tool search)
+  lib/              Pure utility functions (class names, metadata, theme, nav, clipboard, downloads, tool search,
+                    local image loading with size limits)
     tools/          Tool logic as pure functions (unit tests in *.test.ts beside them): json, text-stats,
                     url, base64, uuid, text-case, regex, minify, jwt, timestamp, diff, sql,
                     json-to-ts, csv, json-schema, xml, json-diff, color, cron, markdown,
@@ -91,7 +93,7 @@ src/
                     shell (shared command tokenizer), curl, url-parse, html-editor, user-agent,
                     http-status, keycode, qr, svg-placeholder, git-cheatsheet, docker-compose,
                     benchmark, lorem, chmod, ipv4, mac, ipv6-ula, device-info, ports, password,
-                    http-headers, meta-tags
+                    http-headers, meta-tags, svg-png, favicon (with ICO and ZIP writers), screenshot
   data/             Generated datasets bundled with tools (oui-vendors.json)
   types/            Shared TypeScript types, and declarations for untyped packages (mime-db)
 e2e/                Playwright browser tests: site-wide regression checks and tool workflows
