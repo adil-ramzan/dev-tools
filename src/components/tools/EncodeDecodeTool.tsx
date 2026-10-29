@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type ReactNode } from "react";
 import { ActionBar, ToolColumns, ToolPanel, ToolToolbar } from "@/components/tools/ToolPanel";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -12,10 +12,13 @@ export type ConvertResult = { ok: true; output: string; note?: string } | { ok: 
 type EncodeDecodeToolProps = {
   /** Options shown in the toolbar (mode switches, checkboxes). */
   options?: ReactNode;
-  encode: (input: string) => ConvertResult;
-  decode: (input: string) => ConvertResult;
+  /** May return a promise, e.g. while a library loads; the result is shown when it settles. */
+  encode: (input: string) => ConvertResult | Promise<ConvertResult>;
+  decode: (input: string) => ConvertResult | Promise<ConvertResult>;
   sample: string;
   inputPlaceholder: string;
+  /** Shown while an asynchronous conversion is pending. */
+  pendingMessage?: string;
 };
 
 /**
@@ -23,15 +26,17 @@ type EncodeDecodeToolProps = {
  * actions, an output with copy, and a swap action to feed the output back in.
  * Conversion only happens on request; the input is never changed by it.
  */
-export function EncodeDecodeTool({ options, encode, decode, sample, inputPlaceholder }: EncodeDecodeToolProps) {
+export function EncodeDecodeTool({ options, encode, decode, sample, inputPlaceholder, pendingMessage = "Working…" }: EncodeDecodeToolProps) {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [status, setStatus] = useState<{ tone: "danger" | "success"; title: string; detail?: string } | null>(null);
+  const [pending, setPending] = useState(false);
+  // Identifies the latest run, so a slow result never overwrites a newer action or a Clear.
+  const runId = useRef(0);
   const inputId = useId();
   const outputId = useId();
 
-  function run(action: "encode" | "decode") {
-    const result = action === "encode" ? encode(input) : decode(input);
+  function show(action: "encode" | "decode", result: ConvertResult) {
     if (result.ok) {
       setOutput(result.output);
       setStatus({ tone: "success", title: action === "encode" ? "Encoded." : "Decoded.", detail: result.note });
@@ -41,7 +46,28 @@ export function EncodeDecodeTool({ options, encode, decode, sample, inputPlaceho
     }
   }
 
+  function run(action: "encode" | "decode") {
+    const id = ++runId.current;
+    const result = action === "encode" ? encode(input) : decode(input);
+    if (!(result instanceof Promise)) {
+      show(action, result);
+      return;
+    }
+    setPending(true);
+    setOutput("");
+    setStatus(null);
+    void result
+      .catch((error: unknown): ConvertResult => ({ ok: false, error: error instanceof Error ? error.message : String(error) }))
+      .then((settled) => {
+        if (id !== runId.current) return;
+        setPending(false);
+        show(action, settled);
+      });
+  }
+
   function clear() {
+    runId.current++;
+    setPending(false);
     setInput("");
     setOutput("");
     setStatus(null);
@@ -64,21 +90,25 @@ export function EncodeDecodeTool({ options, encode, decode, sample, inputPlaceho
             <ActionBar
               primary={
                 <>
-                  <Button variant="primary" onClick={() => run("encode")} disabled={!input}>
+                  <Button variant="primary" onClick={() => run("encode")} disabled={!input || pending}>
                     Encode
                   </Button>
-                  <Button variant="primary" onClick={() => run("decode")} disabled={!input}>
+                  <Button variant="primary" onClick={() => run("decode")} disabled={!input || pending}>
                     Decode
                   </Button>
                 </>
               }
               secondary={
-                <Button variant="ghost" onClick={clear} disabled={!input && !output && !status}>
+                <Button variant="ghost" onClick={clear} disabled={!input && !output && !status && !pending}>
                   Clear
                 </Button>
               }
               status={
-                status ? (
+                pending ? (
+                  <p role="status" className="text-sm text-muted-foreground" data-pending>
+                    {pendingMessage}
+                  </p>
+                ) : status ? (
                   <Alert tone={status.tone} title={status.title}>
                     {status.detail}
                   </Alert>
@@ -104,7 +134,7 @@ export function EncodeDecodeTool({ options, encode, decode, sample, inputPlaceho
                 size="sm"
                 variant="ghost"
                 onClick={() => { setInput(output); setOutput(""); setStatus(null); }}
-                disabled={!output}
+                disabled={!output || pending}
               >
                 Use as input
               </Button>

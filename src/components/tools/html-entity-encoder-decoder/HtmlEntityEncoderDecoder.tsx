@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import { EncodeDecodeTool } from "@/components/tools/EncodeDecodeTool";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { EncodeDecodeTool, type ConvertResult } from "@/components/tools/EncodeDecodeTool";
 import { Alert } from "@/components/ui/Alert";
 import { Notice } from "@/components/ui/Notice";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -17,41 +17,75 @@ import {
 const SAMPLE = `<p class="note">Tom & Jerry's "café" costs < €5 — &copy; 2024</p>`;
 
 export function HtmlEntityEncoderDecoder() {
-  const [lib, setLib] = useState<EntitiesModule | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [nonAscii, setNonAscii] = useState<NonAsciiMode>("keep");
   const [doubleEncode, setDoubleEncode] = useState(false);
   const [strict, setStrict] = useState(false);
   const nonAsciiId = useId();
+  const libRef = useRef<Promise<EntitiesModule> | null>(null);
 
-  // The entity tables load in the background as soon as the page is ready.
-  useEffect(() => {
-    loadEntities().then(setLib, () => setLoadFailed(true));
+  /**
+   * The entity tables, loaded once. Encoding and decoding always wait for
+   * them, so an action taken while they load gives the full result rather
+   * than numeric-only or empty output. A failed load is retried next time.
+   */
+  const getLib = useCallback(() => {
+    libRef.current ??= loadEntities().then(
+      (lib) => {
+        setLoadFailed(false);
+        return lib;
+      },
+      (error: unknown) => {
+        libRef.current = null;
+        setLoadFailed(true);
+        throw error;
+      },
+    );
+    return libRef.current;
   }, []);
+
+  // Start loading in the background as soon as the page is ready.
+  useEffect(() => {
+    getLib().catch(() => {});
+  }, [getLib]);
+
+  const withLib = async (run: (lib: EntitiesModule) => ConvertResult): Promise<ConvertResult> => {
+    let lib: EntitiesModule;
+    try {
+      lib = await getLib();
+    } catch {
+      return { ok: false, error: "The entity table could not be loaded. Check your connection and try again." };
+    }
+    return run(lib);
+  };
 
   return (
     <div className="flex flex-col gap-4">
       {loadFailed ? (
         <Alert title="The entity table could not be loaded">
-          Decoding and named references are unavailable. Check your connection and reload the page.
+          Encoding and decoding need it. Check your connection, then select Encode or Decode again to retry.
         </Alert>
       ) : null}
       <EncodeDecodeTool
         sample={SAMPLE}
         inputPlaceholder="Text to encode, or HTML with entities to decode"
-        encode={(input) => {
-          const result = encodeHtmlEntities(input, { nonAscii, doubleEncode }, lib);
-          if (!result.ok) return result;
-          const summary = `${result.changed.toLocaleString("en-US")} ${result.changed === 1 ? "character" : "characters"} encoded.`;
-          return { ok: true, output: result.output, note: result.note ? `${summary} ${result.note}` : summary };
-        }}
-        decode={(input) => {
-          if (!lib) return { ok: false, error: "The entity table is still loading. Try again in a moment." };
-          const result = decodeHtmlEntities(input, { strict }, lib);
-          if (!result.ok) return result;
-          const summary = `${result.changed.toLocaleString("en-US")} ${result.changed === 1 ? "reference" : "references"} decoded.`;
-          return { ok: true, output: result.output, note: result.note ? `${summary} ${result.note}` : summary };
-        }}
+        pendingMessage="Loading the HTML entity table…"
+        encode={(input) =>
+          withLib((lib) => {
+            const result = encodeHtmlEntities(input, { nonAscii, doubleEncode }, lib);
+            if (!result.ok) return result;
+            const summary = `${result.changed.toLocaleString("en-US")} ${result.changed === 1 ? "character" : "characters"} encoded.`;
+            return { ok: true, output: result.output, note: result.note ? `${summary} ${result.note}` : summary };
+          })
+        }
+        decode={(input) =>
+          withLib((lib) => {
+            const result = decodeHtmlEntities(input, { strict }, lib);
+            if (!result.ok) return result;
+            const summary = `${result.changed.toLocaleString("en-US")} ${result.changed === 1 ? "reference" : "references"} decoded.`;
+            return { ok: true, output: result.output, note: result.note ? `${summary} ${result.note}` : summary };
+          })
+        }
         options={
           <>
             <div className="flex flex-col gap-1.5">

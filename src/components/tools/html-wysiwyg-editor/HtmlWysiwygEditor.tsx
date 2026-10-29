@@ -76,30 +76,51 @@ export function HtmlWysiwygEditor() {
   const [link, setLink] = useState("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  // HTML waiting to be loaded until DOMPurify is ready, so nothing is cleaned to an empty document.
+  const pendingLoad = useRef<string | null>(null);
+  const [waiting, setWaiting] = useState(false);
   const ids = { source: useId(), link: useId(), linkError: useId(), output: useId() };
+
+  const sanitize = useCallback((value: string) => (purify ? sanitizeEditorHtml(value, purify) : ""), [purify]);
+  /** Sanitized HTML for a frame, with remote media URLs made inert. */
+  const forFrame = useCallback((clean: string) => blockRemoteMedia(clean, new DOMParser()), []);
+
+  /** Sanitizes a whole document with the given sanitizer and reloads the editing frame with it. */
+  const apply = useCallback(
+    (instance: DOMPurify, value: string) => {
+      const clean = sanitizeEditorHtml(value.slice(0, MAX_HTML_LENGTH), instance);
+      setHtml(clean);
+      setSource(formatHtml(clean));
+      setEditorDoc(frameDocument(forFrame(clean), { editable: true }));
+      setEditorKey((k) => k + 1);
+    },
+    [forFrame],
+  );
 
   useEffect(() => {
     // A DOMPurify instance is callable: wrap it, or React would call it as a state updater.
     import("dompurify").then((m) => {
       const instance = createSanitizer(m.default, window);
       setPurify(() => instance);
+      if (pendingLoad.current !== null) {
+        apply(instance, pendingLoad.current);
+        pendingLoad.current = null;
+        setWaiting(false);
+      }
     }, () => setLoadFailed(true));
-  }, []);
+  }, [apply]);
 
-  const sanitize = useCallback((value: string) => (purify ? sanitizeEditorHtml(value, purify) : ""), [purify]);
-  /** Sanitized HTML for a frame, with remote media URLs made inert. */
-  const forFrame = useCallback((clean: string) => blockRemoteMedia(clean, new DOMParser()), []);
-
-  /** Replaces the whole document: sanitizes it and reloads the editing frame. */
+  /** Replaces the whole document. Before DOMPurify has loaded, the HTML is kept and loaded as soon as it is ready. */
   const load = useCallback(
     (value: string) => {
-      const clean = sanitize(value.slice(0, MAX_HTML_LENGTH));
-      setHtml(clean);
-      setSource(formatHtml(clean));
-      setEditorDoc(frameDocument(forFrame(clean), { editable: true }));
-      setEditorKey((k) => k + 1);
+      if (purify) {
+        apply(purify, value);
+        return;
+      }
+      pendingLoad.current = value;
+      setWaiting(true);
     },
-    [sanitize, forFrame],
+    [purify, apply],
   );
 
   const syncFromFrame = useCallback(() => {
@@ -158,13 +179,19 @@ export function HtmlWysiwygEditor() {
 
   function switchView(next: View) {
     if (view === "source") load(source);
-    if (next === "source") setSource(formatHtml(html));
+    // While DOMPurify loads, the source keeps the HTML that is waiting to be cleaned.
+    if (next === "source") setSource(pendingLoad.current ?? formatHtml(html));
     setView(next);
   }
 
   const sourcePreview = useMemo(() => (view === "source" && purify ? sanitize(source) : ""), [view, purify, source, sanitize]);
   const sourceChanged = view === "source" && source.trim() !== "" && sourcePreview.replace(/\s+/g, "") !== source.replace(/\s+/g, "");
-  const output = formatHtml(html);
+  const output = waiting ? "" : formatHtml(html);
+  const loadingPanel = (label: string) => (
+    <div role="status" data-sanitizer-loading className="flex h-96 w-full items-center justify-center rounded-sm border border-border bg-subtle px-6 text-center text-sm text-muted-foreground">
+      {label}
+    </div>
+  );
 
   if (loadFailed) return <Alert title="The editor could not be loaded">Check your connection and reload the page.</Alert>;
 
@@ -186,7 +213,7 @@ export function HtmlWysiwygEditor() {
           <Button size="sm" variant="ghost" onClick={() => { load(SAMPLE); setView("visual"); }} disabled={!purify}>
             Sample
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => load("")} disabled={!html && !source}>
+          <Button size="sm" variant="ghost" onClick={() => load("")} disabled={!html && !source && !waiting}>
             Clear
           </Button>
         </div>
@@ -235,15 +262,20 @@ export function HtmlWysiwygEditor() {
             </div>
           </div>
           {linkError ? <p id={ids.linkError} className="text-sm text-danger">{linkError}</p> : null}
-          <iframe
-            key={editorKey}
-            ref={frameRef}
-            title="Visual HTML editor"
-            sandbox="allow-same-origin"
-            srcDoc={editorDoc}
-            onLoad={onFrameLoad}
-            className="h-96 w-full rounded-sm border border-input bg-white"
-          />
+          {/* Editing starts once DOMPurify is ready, so every change can be cleaned straight away. */}
+          {purify ? (
+            <iframe
+              key={editorKey}
+              ref={frameRef}
+              title="Visual HTML editor"
+              sandbox="allow-same-origin"
+              srcDoc={editorDoc}
+              onLoad={onFrameLoad}
+              className="h-96 w-full rounded-sm border border-input bg-white"
+            />
+          ) : (
+            loadingPanel("Loading the editor and HTML sanitizer…")
+          )}
         </div>
       ) : view === "source" ? (
         <div className="flex flex-col gap-2">
@@ -258,10 +290,19 @@ export function HtmlWysiwygEditor() {
           ) : null}
         </div>
       ) : (
-        <iframe title="Preview of the HTML" sandbox="" srcDoc={frameDocument(forFrame(html), { editable: false })} className="h-96 w-full rounded-sm border border-border bg-white" />
+        purify ? (
+          <iframe title="Preview of the HTML" sandbox="" srcDoc={frameDocument(forFrame(html), { editable: false })} className="h-96 w-full rounded-sm border border-border bg-white" />
+        ) : (
+          loadingPanel("Loading the HTML sanitizer… The preview appears when your HTML has been cleaned.")
+        )
       )}
 
-      <ToolPanel label="Clean HTML" htmlFor={ids.output} actions={<CopyButton text={output} ariaLabel="Copy HTML" />}>
+      <ToolPanel
+        label="Clean HTML"
+        htmlFor={ids.output}
+        actions={<CopyButton text={output} ariaLabel="Copy HTML" />}
+        footer={waiting ? <span role="status">Cleaning your HTML as soon as the sanitizer has loaded…</span> : undefined}
+      >
         <Textarea id={ids.output} value={output} readOnly placeholder="Your sanitized HTML appears here" className="min-h-40 bg-subtle" wrap="off" />
       </ToolPanel>
 
