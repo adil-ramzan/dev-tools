@@ -295,6 +295,7 @@ test.describe("compact help", () => {
     await expect(detail).toBeVisible();
     // The FAQ structured data still lists every question.
     const jsonLd = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
-    expect(jsonLd.mainEntity.length).toBe(4);
+    const faq = jsonLd["@graph"].find((node: { "@type": string }) => node["@type"] === "FAQPage");
+    expect(faq.mainEntity.length).toBe(4);
   });
 });

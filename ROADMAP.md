@@ -104,6 +104,41 @@ pass.
   confirm an image exists or check its real size; it reads only the HTML
   given and cannot see what a live page serves to crawlers.
 
+- **Phase 12, site pages:** About, Contact, Privacy Policy, Terms of Use and
+  Tutorials, with no new tools or dependencies. Footer links to all five, and
+  Tutorials is in the header. Five tutorials live in `src/content/tutorials.ts`
+  (IPv4 subnetting, HTTP headers, passwords, HTML entities, JSON); a unit test
+  recomputes each worked example with the tool's own logic, and tool pages link
+  to their tutorials. The privacy policy describes the verified behavior (no
+  cookies or third-party requests from the site's code, only `theme` in local
+  storage, the Markdown Editor's opt-in remote images), and a browser test
+  checks those claims. Open items:
+  - No contact address is published: `/contact` says so until
+    `siteConfig.contactEmail` is set.
+  - The policy cannot see Cloudflare dashboard settings; if Web Analytics or
+    bot-protection cookies are enabled there, update the policy.
+  - The legal pages have not been reviewed by a lawyer and name no operator,
+    jurisdiction or effective date.
+
+- **Phase 13, SEO:** canonical, Open Graph, sitemap, robots and structured
+  data URLs all come from `siteConfig.url` through one helper (`absoluteUrl`),
+  with no trailing slash (the homepage is the bare origin). Production builds
+  default to `https://dev-tools.emadilramzan.workers.dev` when
+  `NEXT_PUBLIC_SITE_URL` is unset, and fail on localhost, non-HTTPS, malformed
+  or path-bearing values, so localhost can no longer reach generated SEO
+  output. JSON-LD: `WebSite` on the homepage, `WebApplication` plus the
+  existing `FAQPage` (one `@graph` script) on tool pages, `TechArticle` on
+  tutorials; no ratings, prices, authors, dates or organization. No
+  `BreadcrumbList`, because the site shows no breadcrumb trail. The 404 page
+  now has a single `noindex` (the root layout's redundant `index, follow` was
+  removed) and its own description. `e2e/seo.spec.ts` checks the built export:
+  sitemap coverage and uniqueness, robots, unique titles and descriptions,
+  canonical and `og:url` agreement, structured data against visible content,
+  404s. Not verified: the Cloudflare build variable, the live site, and any
+  search-engine submission; FAQ rich results are currently shown by Google only
+  for a small set of authoritative sites, so `FAQPage` is unlikely to produce
+  them here.
+
 ## Next
 
 No tools are planned. Add new items here before work starts.

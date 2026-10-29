@@ -12,7 +12,7 @@ cp .env.example .env.local   # optional: set NEXT_PUBLIC_SITE_URL
 npm run dev                  # http://localhost:3000
 ```
 
-`NEXT_PUBLIC_SITE_URL` is the public base URL used for canonical links, Open Graph URLs, `robots.txt` and `sitemap.xml`. It defaults to `http://localhost:3000`, so set it for production builds.
+`NEXT_PUBLIC_SITE_URL` is the public origin used for canonical links, Open Graph URLs, structured data, `robots.txt` and `sitemap.xml`. Production builds use `https://dev-tools.emadilramzan.workers.dev` when it is unset, and fail if it is malformed, has a path, is not HTTPS or points to localhost (`resolveSiteUrl` in `src/config/site.ts`). `npm run dev` defaults to `http://localhost:3000`.
 
 ## Scripts
 
@@ -31,7 +31,7 @@ npm run dev                  # http://localhost:3000
 
 The site is a static export (`output: "export"`): `npm run build` writes every page, `robots.txt` and `sitemap.xml` to `out/`. Cloudflare Workers Builds deploys the `main` branch to the Worker `dev-tools` with `npx wrangler deploy`, which runs the build command in `wrangler.jsonc` and uploads `out/` as static assets. No Worker code runs per request, so there is no server CPU limit to hit, and unknown paths get `404.html` with status 404.
 
-- Set `NEXT_PUBLIC_SITE_URL` (for example `https://dev-tools.<subdomain>.workers.dev` or your custom domain) as a **build** variable in the Worker's Settings → Builds. It is inlined at build time, so changing it needs a new build.
+- Set `NEXT_PUBLIC_SITE_URL` (for example `https://dev-tools.emadilramzan.workers.dev` or your custom domain) as a **build** variable in the Worker's Settings → Builds. It is inlined at build time, so changing it needs a new build.
 - Keep the Builds settings at their defaults: no build command (wrangler runs it) and the deploy command `npx wrangler deploy`.
 - Features that need a server (route handlers that read the request, `cacheComponents`, rewrites, headers, image optimization) cannot be used. Cache Components in particular requires the Node.js runtime and hangs on Workers.
 
@@ -79,6 +79,7 @@ src/
   components/
     layout/         Site chrome: SiteHeader, HeaderSearch, DesktopNav, MobileNav, ThemeToggle, SiteFooter,
                     PageHeader, SkipLink
+    content/        Shared written-content blocks: RichText, ContentSection, ExampleBlock
     seo/            JsonLd
     ui/             Primitives: Button (+ buttonClassName), Container, Field, Label, Hint, Notice,
                     FieldError, Input, Textarea, Checkbox, SegmentedControl, CopyButton,
@@ -90,6 +91,7 @@ src/
   content/
     tools.ts        Tool registry: the source of truth for tool routes, listings and the sitemap
     categories.ts   Category definitions; only categories with tools are published
+    tutorials.ts    Tutorials (/tutorials/<slug>); examples are checked against tool logic in tutorials.test.ts
   lib/              Pure utility functions (class names, metadata, theme, nav, clipboard, downloads, tool search,
                     local image loading with size limits)
     tools/          Tool logic as pure functions (unit tests in *.test.ts beside them): json, text-stats,
@@ -110,14 +112,14 @@ e2e/                Playwright browser tests: site-wide regression checks and to
 
 - **Frontend only.** No API routes, server actions, database, authentication or external data services.
 - **Server Components by default.** Pages and layouts render on the server or at build time for SEO. Only interactive tool UIs are Client Components (`"use client"`), and they keep processing in the browser.
-- **Registry-driven routing.** Each tool gets an entry in `src/content/tools.ts` and a route at `/tools/<slug>`. Categories live in `src/content/categories.ts`; a category page exists only while at least one tool belongs to it. The homepage, directory, category pages, footer and sitemap all read from these two files.
+- **Registry-driven routing.** Each tool gets an entry in `src/content/tools.ts` and a route at `/tools/<slug>`. Categories live in `src/content/categories.ts`; a category page exists only while at least one tool belongs to it. The homepage, directory, category pages and sitemap all read from these two files.
 - **Tool grid and filters.** The homepage and `/tools` share `ToolDirectory`: a tile grid with category filters. On `/tools` the selected category is mirrored to `?category=`, and the page is prerendered with the full list as a Suspense fallback, so every tool is in the static HTML.
 - **Tool pages.** Each tool is a static route at `src/app/tools/<slug>/page.tsx` that renders `<ToolPage>` with its written content (`ToolPageContent`: explanation, example, notes, FAQs) and the interactive component. Static routes mean an unknown `/tools/<slug>` returns a real 404. `ToolPage` adds FAQPage structured data that mirrors the visible FAQs and links to related available tools.
 - **Tool icons.** `ToolIcon` draws a colorful, emoji-style SVG for each tool on a 32×32 grid, so icons look the same on every platform and in both themes. Add an entry to `ToolIconName` and the icon map for each new tool.
 - **Regex safety.** The Regex Tester runs patterns in a Web Worker (`regex.worker.ts`) and terminates it after 1 second, and the JSON Schema Validator does the same after 3 seconds (`runInWorker` in `src/lib/worker.ts`), so catastrophic backtracking cannot freeze the page.
 - **Tool status.** Each tool has `status: "planned" | "available"`. Planned tools appear as "Coming soon" tiles without a link and are left out of the sitemap. Set a tool to `"available"` when its page ships.
 - **Header search.** `HeaderSearch` in the shared header searches the tool registry in the browser (`src/lib/search.ts`): names, keywords, category names and descriptions, every query word required, ranked by where the words matched. Only available tools are listed. It is an ARIA combobox with a listbox popup (Arrow keys, Enter, Escape, a clear button and a live result count), opens with `/` outside text fields and Ctrl+K (⌘+K on Mac) anywhere except key-capturing areas, and collapses to a button below the `md` breakpoint. Queries are not sent, stored or put in the URL.
-- **Navigation.** `mainNav` and `footerNav` in `src/config/site.ts` drive the header and footer. The header shows its links from the `md` breakpoint up and a disclosure menu below it; both are hidden while `mainNav` is empty.
+- **Navigation.** `mainNav` in `src/config/site.ts` drives the header, and `footerNav` and `aboutNav` the footer's Site and About groups. The header shows its links from the `md` breakpoint up and a disclosure menu below it; both are hidden while `mainNav` is empty.
 - **Theming.** Light and dark themes come from CSS token overrides keyed on `data-theme` on `<html>`. The preference (system, light or dark) is stored in `localStorage` under `theme`, and an inline script in `<head>` (`themeInitScript` in `src/lib/theme.ts`) applies it before first paint, so there is no flash. Without JavaScript the site follows the OS setting.
 - **Metadata.** The root layout sets defaults, a title template (`%s · Developer Tools`) and `metadataBase`. Pages export metadata built with `pageMetadata()` from `src/lib/metadata.ts`, which also sets the canonical URL.
 

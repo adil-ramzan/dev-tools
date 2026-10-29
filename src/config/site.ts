@@ -3,10 +3,34 @@
  * description) lives here so metadata, robots and sitemap stay in sync.
  */
 
-function resolveSiteUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (!raw) return "http://localhost:3000";
-  return raw.replace(/\/+$/, "");
+/** The deployed Cloudflare Workers address, used by production builds when NEXT_PUBLIC_SITE_URL is not set. */
+export const PRODUCTION_SITE_URL = "https://dev-tools.emadilramzan.workers.dev";
+
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]);
+
+/**
+ * The site's origin, without a trailing slash. Production builds (`next build`)
+ * must have a public HTTPS origin: they fail rather than write a localhost or
+ * malformed URL into canonical links, the sitemap or robots.txt.
+ */
+export function resolveSiteUrl(raw = process.env.NEXT_PUBLIC_SITE_URL, nodeEnv = process.env.NODE_ENV): string {
+  const production = nodeEnv === "production";
+  const value = raw?.trim();
+  if (!value) return production ? PRODUCTION_SITE_URL : "http://localhost:3000";
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error(`NEXT_PUBLIC_SITE_URL is not a valid URL: "${value}"`);
+  }
+  if (url.pathname !== "/" || url.search || url.hash || url.username || url.password) {
+    throw new Error(`NEXT_PUBLIC_SITE_URL must be an origin only, such as ${PRODUCTION_SITE_URL}: "${value}"`);
+  }
+  if (production && (url.protocol !== "https:" || LOCAL_HOSTS.has(url.hostname))) {
+    throw new Error(`NEXT_PUBLIC_SITE_URL must be a public https:// URL in production builds: "${value}"`);
+  }
+  return url.origin;
 }
 
 export const siteConfig = {
@@ -18,6 +42,9 @@ export const siteConfig = {
     "Free online developer tools for formatting JSON, encoding URLs and Base64, testing regular expressions, generating UUIDs and more. No account required.",
   url: resolveSiteUrl(),
   locale: "en_US",
+  // Public contact address for /contact. None has been published yet, so the
+  // contact page says so instead of showing an address or a form.
+  contactEmail: null as string | null,
 } as const;
 
 export type NavItem = {
@@ -32,11 +59,20 @@ export type NavItem = {
 export const mainNav: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "All tools", href: "/tools", match: ["/categories"] },
+  { label: "Tutorials", href: "/tutorials" },
 ];
 
-// Secondary site links in the footer. Category links are added from
-// src/content/categories.ts.
+// Secondary site links in the footer.
 export const footerNav: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "All tools", href: "/tools" },
+  { label: "Tutorials", href: "/tutorials" },
+];
+
+// About the site and its policies, in the footer.
+export const aboutNav: NavItem[] = [
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms of Use", href: "/terms" },
 ];

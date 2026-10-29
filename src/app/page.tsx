@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { ToolDirectory } from "@/components/tools/ToolDirectory";
 import { Container } from "@/components/ui/Container";
 import { siteConfig } from "@/config/site";
 import { categories } from "@/content/categories";
 import { tools } from "@/content/tools";
 import { pageMetadata } from "@/lib/metadata";
+import { jsonLdDocument, websiteSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
-  title: `${siteConfig.name}: Free Online Developer Tools`,
+  title: `${siteConfig.name}: Free Online Utilities for Code and Data`,
   description: siteConfig.description,
   path: "/",
   absoluteTitle: true,
@@ -75,6 +77,8 @@ export default function HomePage() {
           </ol>
         </Container>
       </section>
+
+      <JsonLd data={jsonLdDocument(websiteSchema())} />
     </>
   );
 }

@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ContentSection, ExampleBlock } from "@/components/content/ContentSection";
+import { RichText } from "@/components/content/RichText";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ToolIcon } from "@/components/tools/ToolIcon";
 import { Container } from "@/components/ui/Container";
 import { categoryPath, getCategoryBySlug } from "@/content/categories";
 import { getToolBySlug, toolPath, tools } from "@/content/tools";
+import { tutorialPath, tutorialsForTool } from "@/content/tutorials";
 import { pageMetadata } from "@/lib/metadata";
+import { faqSchema, jsonLdDocument, toolSchema } from "@/lib/structured-data";
 import type { ToolDefinition, ToolPageContent } from "@/types/tool";
 
 /** Looks up a tool by slug, failing the build if the slug is wrong. */
@@ -20,21 +24,6 @@ export function toolMetadata(slug: string, content: ToolPageContent): Metadata {
   const tool = requireTool(slug);
   return pageMetadata({ title: tool.name, description: content.metaDescription, path: toolPath(slug) });
 }
-
-/** Renders `code` spans in content strings. */
-function RichText({ text }: { text: string }) {
-  return text.split(/(`[^`]+`)/g).map((part, i) =>
-    part.startsWith("`") && part.endsWith("`") ? (
-      <code key={i} className="rounded-sm bg-subtle px-1 py-0.5 text-[0.85em] [overflow-wrap:anywhere]">
-        {part.slice(1, -1)}
-      </code>
-    ) : (
-      part
-    ),
-  );
-}
-
-const plain = (text: string) => text.replace(/`/g, "");
 
 function relatedTools(tool: ToolDefinition, content: ToolPageContent): ToolDefinition[] {
   const available = tools.filter((t) => t.status === "available" && t.slug !== tool.slug);
@@ -56,16 +45,9 @@ export function ToolPage({ slug, content, children }: ToolPageProps) {
   const tool = requireTool(slug);
   const category = getCategoryBySlug(tool.category);
   const related = relatedTools(tool, content);
-  // FAQ structured data mirrors the questions shown on the page.
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: content.faqs.map((faq) => ({
-      "@type": "Question",
-      name: plain(faq.question),
-      acceptedAnswer: { "@type": "Answer", text: plain(faq.answer) },
-    })),
-  };
+  const guides = tutorialsForTool(slug);
+  // The tool itself, plus FAQ structured data that mirrors the questions shown on the page.
+  const structuredData = jsonLdDocument(toolSchema(tool, content, toolPath(slug)), faqSchema(content.faqs));
 
   return (
     <Container size="wide" className="flex flex-col gap-5 py-5 sm:gap-6 sm:py-8">
@@ -154,6 +136,18 @@ export function ToolPage({ slug, content, children }: ToolPageProps) {
               ))}
             </ul>
           ) : null}
+          {guides.length > 0 ? (
+            <div className="flex flex-col gap-2 border-t border-border pt-4">
+              <h2 className="font-semibold tracking-tight">Tutorials</h2>
+              <ul className="flex flex-col gap-1.5 text-sm">
+                {guides.map((guide) => (
+                  <li key={guide.slug}>
+                    <Link href={tutorialPath(guide.slug)}>{guide.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <div className="flex flex-col gap-1.5 border-t border-border pt-4 text-sm">
             {category ? <Link href={categoryPath(category.slug)}>Browse {category.name}</Link> : null}
             <Link href="/tools">Browse all tools</Link>
@@ -163,28 +157,5 @@ export function ToolPage({ slug, content, children }: ToolPageProps) {
 
       <JsonLd data={structuredData} />
     </Container>
-  );
-}
-
-function ContentSection({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return (
-    <section aria-labelledby={`${id}-heading`} className="flex flex-col gap-4 leading-relaxed text-muted-foreground">
-      <h2 id={`${id}-heading`} className="text-xl font-semibold tracking-tight text-foreground">
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}
-
-function ExampleBlock({ label, code }: { label: string; code: string }) {
-  return (
-    <figure className="flex min-w-0 flex-col gap-1.5">
-      <figcaption className="font-mono text-xs text-muted-foreground uppercase">{label}</figcaption>
-      {/* Focusable so keyboard users can scroll long lines (WCAG 2.1.1). */}
-      <pre tabIndex={0} className="overflow-x-auto rounded-md border border-border bg-surface p-3 text-[0.8125rem] leading-relaxed text-foreground">
-        <code>{code}</code>
-      </pre>
-    </figure>
   );
 }

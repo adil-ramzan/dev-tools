@@ -6,7 +6,7 @@ const slug = "device-information";
 
 const content: ToolPageContent = {
   metaDescription:
-    "See what your browser reports about your device: viewport and screen size, pixel ratio, language, time zone, connection and supported features. Nothing is collected or sent.",
+    "See what your browser reports about your device: viewport and screen size, pixel ratio, language, time zone and supported features. Nothing is collected or sent.",
   howItWorks: [
     "When the page opens, it reads standard browser APIs such as `window.innerWidth`, `screen`, `devicePixelRatio`, `navigator.language` and `Intl` and shows the values grouped by topic.",
     "Each value is labelled. Reported values come straight from the browser. Estimates are coarse or derived, such as approximate memory or the network speed guess. Detected features are only checked for existence.",

@@ -4,9 +4,10 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { buttonClassName } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 
+// Next.js adds <meta name="robots" content="noindex"> to not-found pages itself.
 export const metadata: Metadata = {
   title: "Page not found",
-  robots: { index: false },
+  description: "The page you are looking for does not exist or has moved.",
 };
 
 export default function NotFound() {

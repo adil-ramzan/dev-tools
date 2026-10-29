@@ -1,12 +1,6 @@
 import { Container } from "@/components/ui/Container";
 import { TextLink } from "@/components/ui/TextLink";
-import { footerNav, siteConfig, type NavItem } from "@/config/site";
-import { categories, categoryPath } from "@/content/categories";
-
-const categoryNav: NavItem[] = categories.map((category) => ({
-  label: category.name,
-  href: categoryPath(category.slug),
-}));
+import { aboutNav, footerNav, siteConfig, type NavItem } from "@/config/site";
 
 export function SiteFooter() {
   return (
@@ -19,7 +13,7 @@ export function SiteFooter() {
         </p>
         <div className="flex flex-wrap gap-x-16 gap-y-8">
           <FooterNavGroup label="Site" items={footerNav} />
-          <FooterNavGroup label="Categories" items={categoryNav} />
+          <FooterNavGroup label="About" items={aboutNav} />
         </div>
       </Container>
     </footer>

@@ -38,10 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  // No robots default: pages are indexable unless they opt out, and not-found pages get Next.js's own noindex.
   formatDetection: {
     telephone: false,
   },
