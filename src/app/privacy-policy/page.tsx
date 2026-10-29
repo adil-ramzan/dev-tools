@@ -97,7 +97,8 @@ export default function PrivacyPolicyPage() {
         <p>
           The site&apos;s code sets no cookies. If you choose Light or Dark with the theme button, that choice is saved
           in your browser&apos;s local storage under the key <code>theme</code>, so the site looks the same on your next
-          visit. Choosing System removes it. It is never sent to the site, and you can clear it at any time through your
+          visit. Until you choose, nothing is saved and the site follows your device&apos;s light or dark setting. It is
+          never sent to the site, and you can clear it at any time through your
           browser&apos;s settings for site data.
         </p>
         <p>
