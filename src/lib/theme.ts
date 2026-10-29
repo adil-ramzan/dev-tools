@@ -1,8 +1,10 @@
 /**
- * Theme handling. The user picks a preference (system, light or dark), which
- * is stored in localStorage and resolved to a concrete theme. Both are written
- * to <html> as data attributes: `data-theme` drives the color tokens and
- * `data-theme-preference` drives the toggle's icon and label.
+ * Theme handling. The toggle offers two themes, light and dark; the choice is
+ * stored in localStorage. Until a visitor chooses, the preference is "system":
+ * nothing is stored and the operating system's theme is used. Both are written
+ * to <html> as data attributes: `data-theme` drives the color tokens and the
+ * toggle's icon and label, `data-theme-preference` records whether a choice
+ * was made.
  */
 
 export const THEME_STORAGE_KEY = "theme";
@@ -18,9 +20,13 @@ export function parseThemePreference(value: string | null | undefined): ThemePre
   return value === "light" || value === "dark" ? value : "system";
 }
 
-export function nextThemePreference(current: ThemePreference): ThemePreference {
-  const index = themePreferences.indexOf(current);
-  return themePreferences[(index + 1) % themePreferences.length];
+export function parseResolvedTheme(value: string | null | undefined): ResolvedTheme {
+  return value === "dark" ? "dark" : "light";
+}
+
+/** The theme the toggle switches to: always the opposite of the theme on screen, so every click changes it. */
+export function oppositeTheme(current: ResolvedTheme): ResolvedTheme {
+  return current === "dark" ? "light" : "dark";
 }
 
 export function systemPrefersDark(): boolean {
@@ -35,6 +41,11 @@ export function watchSystemTheme(onChange: () => void): () => void {
 
 export function readThemePreference(): ThemePreference {
   return parseThemePreference(document.documentElement.dataset.themePreference);
+}
+
+/** The theme currently shown. */
+export function readResolvedTheme(): ResolvedTheme {
+  return parseResolvedTheme(document.documentElement.dataset.theme);
 }
 
 /** Applies a preference to <html> and, unless `persist` is false, stores it. */

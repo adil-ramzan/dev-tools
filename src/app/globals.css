@@ -158,18 +158,17 @@
 }
 
 /*
- * Theme toggle: show the icon and label for the current preference, set on
+ * Theme toggle: show the icon and label for the theme on screen, set on
  * <html> by the head script. Unlayered so it overrides utility display classes.
  * Hidden entirely when the script has not run (no JavaScript).
  */
-:root:not([data-theme-preference]) .theme-toggle,
+:root:not([data-theme]) .theme-toggle,
 [data-theme-option] {
   display: none;
 }
 
-:root[data-theme-preference="system"] [data-theme-option="system"],
-:root[data-theme-preference="light"] [data-theme-option="light"],
-:root[data-theme-preference="dark"] [data-theme-option="dark"] {
+:root[data-theme="light"] [data-theme-option="light"],
+:root[data-theme="dark"] [data-theme-option="dark"] {
   display: inline-flex;
 }
 

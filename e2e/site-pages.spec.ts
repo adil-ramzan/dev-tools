@@ -172,11 +172,10 @@ test("pages make no third-party requests, set no cookies and store only the them
   expect(await page.evaluate(() => document.cookie)).toBe("");
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
 
-  // Choosing a theme stores only that choice, under "theme"; System removes it.
+  // Choosing Light or Dark stores only that choice, under "theme".
+  await page.locator(".theme-toggle").click();
+  expect(await page.evaluate(() => ({ ...localStorage }))).toEqual({ theme: "dark" });
   await page.locator(".theme-toggle").click();
   expect(await page.evaluate(() => ({ ...localStorage }))).toEqual({ theme: "light" });
-  await page.locator(".theme-toggle").click();
-  await page.locator(".theme-toggle").click();
-  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
   expect(await context.cookies()).toEqual([]);
 });
