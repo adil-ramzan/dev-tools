@@ -61,18 +61,3 @@ export const mainNav: NavItem[] = [
   { label: "All tools", href: "/tools", match: ["/categories"] },
   { label: "Tutorials", href: "/tutorials" },
 ];
-
-// Secondary site links in the footer.
-export const footerNav: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "All tools", href: "/tools" },
-  { label: "Tutorials", href: "/tutorials" },
-];
-
-// About the site and its policies, in the footer.
-export const aboutNav: NavItem[] = [
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Privacy Policy", href: "/privacy-policy" },
-  { label: "Terms of Use", href: "/terms" },
-];

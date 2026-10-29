@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { aboutNav, footerNav, mainNav } from "../src/config/site";
+import { mainNav, siteConfig } from "../src/config/site";
 import { getToolBySlug } from "../src/content/tools";
 import { tutorials } from "../src/content/tutorials";
 import { accessibilityViolations, field, hasHorizontalOverflow } from "./helpers";
@@ -31,18 +31,10 @@ test("each page renders with its heading, title, description and canonical URL",
   }
 });
 
-test("the footer and header link to the new pages, and every link on them resolves", async ({ page, request }) => {
+test("the header links to Tutorials, and every link on the site pages resolves", async ({ page, request }) => {
   await page.goto("/");
-  const footer = page.locator("footer");
-  for (const item of [...footerNav, ...aboutNav]) {
-    await expect(footer.getByRole("link", { name: item.label, exact: true })).toHaveAttribute("href", item.href);
-  }
   await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Tutorials" })).toHaveAttribute("href", "/tutorials");
   expect(mainNav.map((i) => i.href)).toContain("/tutorials");
-
-  await footer.getByRole("link", { name: "Privacy Policy" }).click();
-  await expect(page).toHaveURL(/\/privacy-policy$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy Policy");
 
   const links = new Set<string>();
   for (const { path } of sitePages) {
@@ -54,14 +46,28 @@ test("the footer and header link to the new pages, and every link on them resolv
   for (const link of links) expect((await request.get(link)).status(), link).toBe(200);
 });
 
-test("the footer has only the Site and About groups, while category links remain elsewhere", async ({ page }) => {
+test("the footer shows only the site name and tagline, with no link groups, while category links remain elsewhere", async ({ page }) => {
   await page.goto("/");
   const footer = page.locator("footer");
-  await expect(footer.getByRole("navigation")).toHaveCount(2);
-  await expect(footer.getByRole("heading")).toHaveText(["Site", "About"]);
-  await expect(footer.getByText("Categories", { exact: true })).toHaveCount(0);
-  await expect(footer.locator('a[href^="/categories/"]')).toHaveCount(0);
-  await expect(footer.getByRole("link")).toHaveCount(footerNav.length + aboutNav.length);
+  await expect(footer).toContainText(siteConfig.name);
+  await expect(footer).toContainText(siteConfig.tagline);
+  await expect(footer.getByRole("navigation")).toHaveCount(0);
+  await expect(footer.getByRole("heading")).toHaveCount(0);
+  await expect(footer.getByRole("link")).toHaveCount(0);
+  // The branding is centered on desktop and on a phone.
+  for (const width of [1280, 360]) {
+    await page.setViewportSize({ width, height: 800 });
+    const text = footer.locator("p");
+    await expect(text).toHaveCSS("text-align", "center");
+    const [box, outer] = [await text.boundingBox(), await footer.boundingBox()];
+    const center = (b: { x: number; width: number }) => b.x + b.width / 2;
+    expect(Math.abs(center(box!) - center(outer!)), `${width} px`).toBeLessThan(2);
+    expect(await hasHorizontalOverflow(page), `${width} px`).toBe(false);
+  }
+  // The pages the footer used to link to still exist.
+  for (const path of ["/about", "/contact", "/privacy-policy", "/terms", "/tutorials", "/tools"]) {
+    expect((await page.request.get(path)).status(), path).toBe(200);
+  }
   // Category pages and links outside the footer are unchanged.
   await page.goto("/tools");
   await expect(page.locator('main a[href^="/categories/"]').first()).toBeVisible();
