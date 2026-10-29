@@ -1,0 +1,16 @@
+// Cloudflare Workers deployment: the static export in out/ is served as static
+// assets, so no Worker code runs per request. Workers Builds runs
+// `npx wrangler deploy`, which runs the build command below first.
+// Set NEXT_PUBLIC_SITE_URL as a build variable in the Cloudflare dashboard.
+{
+  "name": "dev-tools",
+  "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

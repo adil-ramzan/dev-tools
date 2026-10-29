@@ -20,19 +20,20 @@ npm run dev                  # http://localhost:3000
 | ------------------- | --------------------------------------------------- |
 | `npm run dev`       | Start the development server (Turbopack)            |
 | `npm run build`     | Create a production build                           |
-| `npm run start`     | Serve the production build                          |
+| `npm run start`     | Serve the static export in `out/` locally (`scripts/serve-static.mjs`) |
 | `npm run lint`      | Run ESLint                                          |
 | `npm run typecheck` | Run the TypeScript compiler without emitting files  |
 | `npm test`          | Run unit tests (Vitest)                             |
-| `npm run test:e2e`  | Run browser tests (Playwright) against a production build; run `npm run build` first |
+| `npm run test:e2e`  | Run browser tests (Playwright) against the static export; run `npm run build` first |
 | `npm run data:oui`  | Regenerate `src/data/oui-vendors.json` from the installed `oui-data` package (MAC Address Vendor Lookup) |
 
 ## Deployment (Cloudflare Workers)
 
-The site is deployed by Cloudflare Workers Builds from the `main` branch (Worker `dev-tools`). The repository has no Wrangler or OpenNext configuration: Workers Builds detects Next.js and builds it with the OpenNext Cloudflare adapter.
+The site is a static export (`output: "export"`): `npm run build` writes every page, `robots.txt` and `sitemap.xml` to `out/`. Cloudflare Workers Builds deploys the `main` branch to the Worker `dev-tools` with `npx wrangler deploy`, which runs the build command in `wrangler.jsonc` and uploads `out/` as static assets. No Worker code runs per request, so there is no server CPU limit to hit, and unknown paths get `404.html` with status 404.
 
 - Set `NEXT_PUBLIC_SITE_URL` (for example `https://dev-tools.<subdomain>.workers.dev` or your custom domain) as a **build** variable in the Worker's Settings → Builds. It is inlined at build time, so changing it needs a new build.
-- Do not enable `cacheComponents` or `partialPrefetching` in `next.config.ts`. Cache Components requires the Node.js runtime; on Workers every page render hangs (error 1101).
+- Keep the Builds settings at their defaults: no build command (wrangler runs it) and the deploy command `npx wrangler deploy`.
+- Features that need a server (route handlers that read the request, `cacheComponents`, rewrites, headers, image optimization) cannot be used. Cache Components in particular requires the Node.js runtime and hangs on Workers.
 
 ## Stack
 

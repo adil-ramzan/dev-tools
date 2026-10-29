@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const port = 3107;
 
 /**
- * Browser tests run against a production build (`npm run build` first) in
+ * Browser tests run against the static export in out/ (`npm run build` first) in
  * the locally installed Chrome, so no browser download is needed.
  */
 export default defineConfig({
@@ -18,7 +18,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npx next start -p ${port}`,
+    command: `node scripts/serve-static.mjs ${port}`,
     url: `http://localhost:${port}`,
     reuseExistingServer: false,
     timeout: 60_000,

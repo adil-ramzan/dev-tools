@@ -9,6 +9,8 @@ import { categories, categoryPath, getCategoryBySlug, toolsInCategory } from "@/
 import { pageMetadata } from "@/lib/metadata";
 
 // Only categories with tools get a page; anything else is a 404.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return categories.map((category) => ({ slug: category.slug }));
 }
