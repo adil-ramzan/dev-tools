@@ -20,7 +20,7 @@ export function DesktopNav({ items }: { items: NavItem[] }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex h-9 items-center rounded-sm px-3 no-underline hover:bg-subtle hover:no-underline",
+                  "inline-flex h-9 items-center rounded-sm px-3 whitespace-nowrap no-underline hover:bg-subtle hover:no-underline",
                   active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >

@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
-  description: `What ${siteConfig.name} is, which developer tools it offers, who they are for, and how the tools process your input in your browser.`,
+  description: `What ${siteConfig.name} is, which free developer tools it offers with no signup, who they are for, and how the tools process your input in your browser.`,
   path: "/about",
 });
 
@@ -30,8 +30,22 @@ export default function AboutPage() {
           and a short explanation of how it works and what its limits are.
         </p>
         <p>
-          The tools are free and need no account or installation. Every tool has a permanent address, so you can
-          bookmark one or share it with a colleague.
+          Every tool has a permanent address, so you can bookmark one or share it with a colleague.
+        </p>
+      </ContentSection>
+
+      <ContentSection id="free-access" title="Free, with no account">
+        <p>
+          Every tool on the site is free to use. There is no registration, no account to create and nothing to sign in
+          to: open a tool&apos;s page and start using it straight away.
+        </p>
+        <p>
+          There are no subscription fees, paid plans or premium versions of any tool, and no tool asks for payment
+          details. All {availableTools.length} tools are available to every visitor on the same terms.
+        </p>
+        <p>
+          The aim is a simple, accessible experience in the browser. There is nothing to install, pages adapt to phones,
+          tablets and desktops in light or dark mode, and the tools can be used with a keyboard.
         </p>
       </ContentSection>
 

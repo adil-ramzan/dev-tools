@@ -39,7 +39,7 @@ export const siteConfig = {
   shortName: "DevTools",
   tagline: "Developer utilities for the browser.",
   description:
-    "Free online developer tools for formatting JSON, encoding URLs and Base64, testing regular expressions, generating UUIDs and more. No account required.",
+    "Free online developer tools with no signup: format JSON, encode URLs and Base64, test regex, generate UUIDs and code, convert data. No account or subscription.",
   url: resolveSiteUrl(),
   locale: "en_US",
   // Public contact address for /contact. None has been published yet, so the

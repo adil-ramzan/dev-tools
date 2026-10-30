@@ -20,7 +20,7 @@ export default function TutorialsPage() {
     <Container size="default" className="flex flex-col gap-10 py-10 sm:py-14">
       <PageHeader
         title="Tutorials"
-        description="Practical guides to common development tasks, with worked examples, common mistakes and the tools to do the job."
+        description="Practical guides to common development tasks, with worked examples, common mistakes and the free tools to do the job."
       />
 
       <ul aria-label="Tutorials" className="flex flex-col">

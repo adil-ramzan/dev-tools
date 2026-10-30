@@ -6,7 +6,7 @@ const slug = "json-formatter";
 
 const content: ToolPageContent = {
   metaDescription:
-    "Format, validate and minify JSON online. Get the exact line and column of syntax errors, choose your indentation and keep large numbers intact.",
+    "Free online JSON formatter: format, validate and minify JSON with no signup. Get the exact line and column of syntax errors and keep large numbers intact.",
   howItWorks: [
     "Paste JSON into the input and choose Format, Minify or Validate. The tool parses your input with a strict JSON parser that follows RFC 8259, the JSON standard, and processes it in your browser.",
     "If the JSON is invalid, nothing is changed. You get the line and column of the first error, a short explanation such as a missing comma or a trailing comma, and a button that selects the problem in the input.",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ToolDirectory } from "@/components/tools/ToolDirectory";
 import { Container } from "@/components/ui/Container";
+import { FreeAccessStrip } from "@/components/ui/FreeAccess";
 import { siteConfig } from "@/config/site";
 import { categories } from "@/content/categories";
 import { tools } from "@/content/tools";
@@ -9,7 +10,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { jsonLdDocument, websiteSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
-  title: `${siteConfig.name}: Free Online Utilities for Code and Data`,
+  title: `Free Online Developer Tools, No Signup Required · ${siteConfig.name}`,
   description: siteConfig.description,
   path: "/",
   absoluteTitle: true,
@@ -18,8 +19,8 @@ export const metadata: Metadata = pageMetadata({
 // Only claims the site can stand behind today.
 const benefits = [
   {
-    title: "Open and use",
-    body: "Every tool is free. There is no account to create and nothing to install.",
+    title: "Free, with no signup",
+    body: "Every tool is free to use. There is no account to create, no subscription or payment, and nothing to install.",
   },
   {
     title: "One task per page",
@@ -46,12 +47,13 @@ export default function HomePage() {
               id="hero-heading"
               className="text-3xl leading-tight font-semibold tracking-[-0.03em] text-balance sm:text-5xl"
             >
-              The essential tools for better code
+              Free Developer Tools. No Signup Required.
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-pretty text-muted-foreground sm:text-lg">
-              All {tools.length} tools are free to use, with no account required. Format, inspect, convert and
-              generate code and data with simple online utilities.
+              Powerful online tools for developers. No account, subscription, or payment required. Format, inspect,
+              convert and generate code and data with {tools.length} simple utilities.
             </p>
+            <FreeAccessStrip className="mt-2" />
           </div>
 
           <ToolDirectory tools={tools} categories={categories} variant="hero" headingLevel="h2" />

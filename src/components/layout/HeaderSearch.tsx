@@ -179,7 +179,7 @@ export function HeaderSearch() {
           "md:static md:block md:border-0 md:bg-transparent md:p-0",
         )}
       >
-        <div role="search" aria-label="Tools" className="relative md:w-56 lg:w-64">
+        <div role="search" aria-label="Tools" className="relative md:w-48 lg:w-64">
           <label htmlFor={ids.input} className="sr-only">
             Search tools
           </label>

@@ -39,10 +39,11 @@ export default async function TutorialPage({ params }: PageProps<"/tutorials/[sl
     <Container size="default" className="flex flex-col gap-8 py-10 sm:py-14">
       <div className="flex flex-col gap-6">
         <PageHeader eyebrow={<Link href="/tutorials">Tutorials</Link>} title={tutorial.title} description={tutorial.description} />
-        <div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link href={toolPath(main.slug)} className={buttonClassName({ variant: "primary" })}>
             Open the {main.name}
           </Link>
+          <p className="text-sm text-muted-foreground">Free to use, no signup required.</p>
         </div>
       </div>
 

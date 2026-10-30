@@ -6,10 +6,11 @@ import { RichText } from "@/components/content/RichText";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ToolIcon } from "@/components/tools/ToolIcon";
 import { Container } from "@/components/ui/Container";
+import { FreeAccessNote, FreeBadge } from "@/components/ui/FreeAccess";
 import { categoryPath, getCategoryBySlug } from "@/content/categories";
 import { getToolBySlug, toolPath, tools } from "@/content/tools";
 import { tutorialPath, tutorialsForTool } from "@/content/tutorials";
-import { pageMetadata } from "@/lib/metadata";
+import { pageMetadata, withFreeNote } from "@/lib/metadata";
 import { faqSchema, jsonLdDocument, toolSchema } from "@/lib/structured-data";
 import type { ToolDefinition, ToolPageContent } from "@/types/tool";
 
@@ -20,9 +21,18 @@ export function requireTool(slug: string): ToolDefinition {
   return tool;
 }
 
+/** The meta description, with the free-access note where it fits. The structured data repeats it. */
+const toolDescription = (content: ToolPageContent) => withFreeNote(content.metaDescription);
+
 export function toolMetadata(slug: string, content: ToolPageContent): Metadata {
   const tool = requireTool(slug);
-  return pageMetadata({ title: tool.name, description: content.metaDescription, path: toolPath(slug) });
+  return pageMetadata({
+    title: tool.name,
+    description: toolDescription(content),
+    path: toolPath(slug),
+    // Shared links have room for the note on every tool.
+    socialDescription: withFreeNote(content.metaDescription, Infinity),
+  });
 }
 
 function relatedTools(tool: ToolDefinition, content: ToolPageContent): ToolDefinition[] {
@@ -47,7 +57,10 @@ export function ToolPage({ slug, content, children }: ToolPageProps) {
   const related = relatedTools(tool, content);
   const guides = tutorialsForTool(slug);
   // The tool itself, plus FAQ structured data that mirrors the questions shown on the page.
-  const structuredData = jsonLdDocument(toolSchema(tool, content, toolPath(slug)), faqSchema(content.faqs));
+  const structuredData = jsonLdDocument(
+    toolSchema(tool, { ...content, metaDescription: toolDescription(content) }, toolPath(slug)),
+    faqSchema(content.faqs),
+  );
 
   return (
     <Container size="wide" className="flex flex-col gap-5 py-5 sm:gap-6 sm:py-8">
@@ -59,8 +72,16 @@ export function ToolPage({ slug, content, children }: ToolPageProps) {
           <ToolIcon name={tool.icon} size={48} />
         </span>
         <div className="flex min-w-0 flex-col gap-1">
-          <h1 className="text-xl leading-tight font-semibold tracking-[-0.02em] sm:text-3xl">{tool.name}</h1>
+          {/* The badge stays outside the h1, so the heading is exactly the tool name. */}
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+            <h1 className="text-xl leading-tight font-semibold tracking-[-0.02em] sm:text-3xl">{tool.name}</h1>
+            <FreeBadge />
+          </div>
           <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">{tool.description}</p>
+          <FreeAccessNote className="mt-1">
+            <span className="font-medium text-foreground">No signup required.</span> Use this tool instantly — no
+            account or payment required.
+          </FreeAccessNote>
         </div>
       </div>
 

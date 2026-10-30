@@ -99,6 +99,9 @@ export function MobileNav({ items }: { items: NavItem[] }) {
             );
           })}
         </ul>
+        <p className="mx-auto max-w-wide border-t border-border px-gutter py-3 text-sm text-muted-foreground">
+          Every tool is free. No signup required.
+        </p>
       </nav>
     </div>
   );

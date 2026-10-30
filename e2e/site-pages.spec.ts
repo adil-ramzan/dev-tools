@@ -46,22 +46,25 @@ test("the header links to Tutorials, and every link on the site pages resolves",
   for (const link of links) expect((await request.get(link)).status(), link).toBe(200);
 });
 
-test("the footer shows only the site name and tagline, with no link groups, while category links remain elsewhere", async ({ page }) => {
+test("the footer shows only the site name, tagline and free-access line, with no link groups, while category links remain elsewhere", async ({ page }) => {
   await page.goto("/");
   const footer = page.locator("footer");
   await expect(footer).toContainText(siteConfig.name);
   await expect(footer).toContainText(siteConfig.tagline);
+  await expect(footer).toContainText("100% Free · No Signup · No Subscription");
   await expect(footer.getByRole("navigation")).toHaveCount(0);
   await expect(footer.getByRole("heading")).toHaveCount(0);
   await expect(footer.getByRole("link")).toHaveCount(0);
-  // The branding is centered on desktop and on a phone.
+  // Both lines are centered on desktop and on a phone.
   for (const width of [1280, 360]) {
     await page.setViewportSize({ width, height: 800 });
-    const text = footer.locator("p");
-    await expect(text).toHaveCSS("text-align", "center");
-    const [box, outer] = [await text.boundingBox(), await footer.boundingBox()];
+    const outer = await footer.boundingBox();
     const center = (b: { x: number; width: number }) => b.x + b.width / 2;
-    expect(Math.abs(center(box!) - center(outer!)), `${width} px`).toBeLessThan(2);
+    for (const text of await footer.locator("p").all()) {
+      await expect(text).toHaveCSS("text-align", "center");
+      const box = await text.boundingBox();
+      expect(Math.abs(center(box!) - center(outer!)), `${width} px`).toBeLessThan(2);
+    }
     expect(await hasHorizontalOverflow(page), `${width} px`).toBe(false);
   }
   // The pages the footer used to link to still exist.
