@@ -3,7 +3,6 @@ import { DesktopNav } from "@/components/layout/DesktopNav";
 import { HeaderSearch } from "@/components/layout/HeaderSearch";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { Container } from "@/components/ui/Container";
 import { FreeBadge } from "@/components/ui/FreeAccess";
 import { mainNav, siteConfig } from "@/config/site";
 
@@ -12,7 +11,8 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
-      <Container size="wide" className="flex h-(--header-height) items-center gap-4">
+      {/* Full width rather than a Container, so the header spans the screen on wide displays. */}
+      <div className="flex h-(--header-height) w-full items-center gap-4 px-gutter lg:px-6">
         {/* The badge sits beside the logo link, not inside it, so the link's name stays the site name. */}
         <div className="mr-auto flex shrink-0 items-center gap-2 md:mr-4">
           <Link
@@ -48,7 +48,7 @@ export function SiteHeader() {
           <ThemeToggle />
           {hasNav ? <MobileNav items={mainNav} /> : null}
         </div>
-      </Container>
+      </div>
     </header>
   );
 }
