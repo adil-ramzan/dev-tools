@@ -40,8 +40,9 @@ export default function HomePage() {
   return (
     <>
       <section aria-labelledby="hero-heading" className="border-b border-border">
-        {/* Compact hero: one-line headline and short subtitle, so the tool grid starts above the fold. */}
-        <Container size="wide" className="flex flex-col gap-6 pt-10 pb-12 sm:pt-12 sm:pb-14">
+        {/* Compact hero: one-line headline and short subtitle, so the tool grid starts above the fold.
+            Full width with the header's padding, so the two line up on wide screens. */}
+        <div className="flex w-full flex-col gap-6 px-gutter pt-10 pb-12 sm:pt-12 sm:pb-14 lg:px-6">
           <div className="mx-auto flex max-w-4xl flex-col items-center gap-3 text-center">
             <h1
               id="hero-heading"
@@ -57,7 +58,7 @@ export default function HomePage() {
           </div>
 
           <ToolDirectory tools={tools} categories={categories} variant="hero" headingLevel="h2" />
-        </Container>
+        </div>
       </section>
 
       <section aria-labelledby="workflow-heading">
